@@ -7,14 +7,15 @@ namespace Coffee
 {
 	internal class CoffeeFileReader : IDisposable
     {
-		private const int maxLineLength = 1024;
+        public char CsvSeparator { get; }
+
+        private const int maxLineLength = 1024;
 		private const int bytesPerSymbol = 2;
-	    private const char csvSeparator = ';';
 
-		private readonly string m_filePath;
-		private readonly StreamReader m_fileStreamReader;
+		private readonly string filePath;
+		private readonly StreamReader fileStreamReader;
 
-		private readonly IEnumerable<string> m_fileLines;
+		private readonly IEnumerable<string> fileLines;
 
 		private bool IsLineEndingReached(char lastRead, StreamReader stream)
 		{
@@ -43,10 +44,10 @@ namespace Coffee
 			var builder = new StringBuilder(maxLineLength);
 			int nextValue;
 
-			while ((nextValue = m_fileStreamReader.Read()) > 0)
+			while ((nextValue = fileStreamReader.Read()) > 0)
 			{
 				char character = (char)nextValue;
-				if (!IsLineEndingReached(character, m_fileStreamReader) &&
+				if (!IsLineEndingReached(character, fileStreamReader) &&
 					builder.Length < maxLineLength)
 				{
 					builder.Append(character);
@@ -63,38 +64,39 @@ namespace Coffee
 			}
 		}
 
-		public CoffeeFileReader(string filePath)
+		public CoffeeFileReader(string filePath, char csvSeparator = ';')
 		{
+		    this.CsvSeparator = csvSeparator;
 			if (!File.Exists(filePath))
 				throw new ArgumentException($"Файл '{filePath}' не существует");
 			
-			m_filePath = filePath;
-			m_fileStreamReader = new StreamReader(m_filePath);
+			this.filePath = filePath;
+			fileStreamReader = new StreamReader(this.filePath);
 
-			m_fileLines = ReadLinesBounded();
+			fileLines = ReadLinesBounded();
 
             // Пропускаем заголовок CSV
-			var enumerator = m_fileLines.GetEnumerator();
+			var enumerator = fileLines.GetEnumerator();
 			if (!enumerator.MoveNext())
 				throw new IOException("Ошибка: Достигнут конец файла");
 		}
 
 		public IEnumerable<CoffeeGrade> ReadGrades()
 		{
-			var enumerator = m_fileLines.GetEnumerator();
+			var enumerator = fileLines.GetEnumerator();
 			CoffeeGrade grade;
 			while (enumerator.MoveNext())
 			{
 				string line = enumerator.Current;
-				bool success = CoffeeGrade.TryParse(out grade, line, csvSeparator);
+				bool success = CoffeeGrade.TryParse(out grade, line, CsvSeparator);
 				yield return success ? grade : null;
 			}
 		}
 
 		public void Dispose()
 		{
-			m_fileStreamReader.Close();
-			m_fileStreamReader.Dispose();
+			fileStreamReader.Close();
+			fileStreamReader.Dispose();
 		}
 	}
 }

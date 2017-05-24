@@ -11,8 +11,12 @@ namespace Coffee
 {
     class DataManager
     {
+        public const char CsvSeparator = ';';
+
         private const string samplePath = "../data_sample.csv";
         private const string filePath = "../data.csv";
+
+        private const string csvHeader = "Сорт; Название;Минимальная высота;Максимальная высота;Длительность созревания(нед.);Описание";
 
         public string ErrorInfo { get; private set; }
 
@@ -24,7 +28,7 @@ namespace Coffee
                 if (!File.Exists(filePath))
                     return false;
 
-                using (var reader = new CoffeeFileReader(filePath))
+                using (var reader = new CoffeeFileReader(filePath, CsvSeparator))
                 {
                     foreach (var grade in reader.ReadGrades())
                     {
@@ -52,9 +56,28 @@ namespace Coffee
                 throw new Exception("Не могу восстановить данные из cемпла");
         }
 
-        public bool Save(IList<CoffeeGrade> grades)
+        public bool Save(IEnumerable<CoffeeGrade> grades)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var stream = File.OpenWrite(filePath))
+                {
+                    using (var writer = new StreamWriter(stream))
+                    {
+                        writer.WriteLine(csvHeader);
+                        foreach (var grade in grades)
+                        {
+                            writer.WriteLine(grade.ToString());
+                        }
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorInfo = ex.Message;
+                return false;
+            }
         }
     }
 }

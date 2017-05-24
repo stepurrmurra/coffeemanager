@@ -5,23 +5,36 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Coffee"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525" Loaded="Window_Loaded">
+        Title="Coffee Manager" Height="350" Width="700" Loaded="Window_Loaded">
 
-    <Grid>
-        <StatusBar Margin="0,0,0,0" Height="30" VerticalAlignment="Top">
+    <Grid Margin="0,0,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="172*"/>
+            <ColumnDefinition Width="405*"/>
+        </Grid.ColumnDefinitions>
+        <StatusBar Margin="0,0,0,0" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2">
             <Menu>
                 <MenuItem Header="Файл">
                     <MenuItem x:Name="saveButton" Header="Сохранить" Click="saveButton_Click"/>
                 </MenuItem>
             </Menu>
-            <Button VerticalAlignment="Center" Click="Button_Click" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                Hello
-            </Button>
         </StatusBar>
-        
-        
-        <DataGrid x:Name="coffeeDataGrid" Margin="0,30,0,0" AutoGenerateColumns="True">
+
+        <StackPanel Orientation="Horizontal" Margin="0,30,0,0" Height="25" VerticalAlignment="Top" Grid.ColumnSpan="2">
+            <ComboBox Width="200" x:Name="searchComboBox">
+            </ComboBox>
+            <TextBox Height="25" Width="500" x:Name="searchTextBox" Text="Поиск..." GotFocus="searchTextBox_GotFocus" LostFocus="searchTextBox_LostFocus"></TextBox>
+        </StackPanel>
+
+        <DataGrid x:Name="coffeeDataGrid" Margin="0,55,0,0" AutoGenerateColumns="False" ItemsSource="{Binding ProductsData}" CellEditEnding="coffeeDataGrid_CellEditEnding" Grid.ColumnSpan="2">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Название" Binding="{Binding Path=Name}" CanUserSort="True"></DataGridTextColumn>
+                <DataGridTextColumn Header="Оригинальное название" Binding="{Binding Path=FullName}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Мин. высота" Binding="{Binding Path=MinHeight}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Макс. высота" Binding="{Binding Path=MaxHeight}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Срок созревания (нед)" Binding="{Binding Path=RipeDuration}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Описание" Binding="{Binding Path=Description}" CanUserSort="False"></DataGridTextColumn>
+            </DataGrid.Columns>
         </DataGrid>
     </Grid>
-    
 </Window>

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Coffee
 {
-    class CoffeeGrade
+    public class CoffeeGrade
     {
         private const int fieldCount = 6;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,35 +21,74 @@ namespace Coffee
     /// </summary>
     public partial class MainWindow : Window
     {
-        private IList<CoffeeGrade> productsData;
+        public ObservableCollection<CoffeeGrade> ProductsData { get; }
+
         private readonly DataManager dataManager = new DataManager();
 
         public MainWindow()
         {
             InitializeComponent();
+            ProductsData = new ObservableCollection<CoffeeGrade>();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!dataManager.TryLoad(out productsData))
+            IList<CoffeeGrade> data;
+            if (!dataManager.TryLoad(out data))
             {
-                dataManager.LoadSample(out productsData);
+                dataManager.LoadSample(out data);
             }
+            foreach (var grade in data)
+                ProductsData.Add(grade);
 
-            coffeeDataGrid.ItemsSource = productsData;
-        }
+            DataContext = this;
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            productsData.RemoveAt(0);
-            coffeeDataGrid.Items.Refresh();
-            return;
+            foreach (var column in coffeeDataGrid.Columns)
+            {
+                var item = new ComboBoxItem
+                {
+                    Content = column.Header.ToString()
+                };
+                searchComboBox.Items.Add(item);
+            }
+            searchComboBox.SelectedIndex = 0;
         }
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!dataManager.Save(productsData))
+            if (!dataManager.Save(ProductsData))
                 MessageBox.Show(dataManager.ErrorInfo, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void coffeeDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            var grid = (DataGrid) sender;
+            string text = e.EditingElement.ToString();
+
+            if (text.IndexOf(DataManager.CsvSeparator) != -1)
+            {
+                e.Cancel = true;
+                MessageBox.Show($"Недопустимый символ '{DataManager.CsvSeparator}' в ячейке", "Недопустимый символ");
+            }
+        }
+
+        public const string SearchPlaceholder = "Поиск...";
+
+        private void searchTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (searchTextBox.Text == SearchPlaceholder)
+                searchTextBox.Text = string.Empty;
+        }
+
+        private void searchTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (searchTextBox.Text == string.Empty)
+                searchTextBox.Text = SearchPlaceholder;
+        }
+
+        private void searchTextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }
