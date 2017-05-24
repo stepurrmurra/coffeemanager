@@ -66,6 +66,7 @@
     <Compile Include="CoffeeFileReader.cs" />
     <Compile Include="CoffeeGrade.cs" />
     <Compile Include="DataManager.cs" />
+    <Compile Include="HidableCoffeeGrade.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

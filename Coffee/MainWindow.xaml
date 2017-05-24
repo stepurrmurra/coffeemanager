@@ -23,10 +23,10 @@
         <StackPanel Orientation="Horizontal" Margin="0,30,0,0" Height="25" VerticalAlignment="Top" Grid.ColumnSpan="2">
             <ComboBox Width="200" x:Name="searchComboBox">
             </ComboBox>
-            <TextBox Height="25" Width="500" x:Name="searchTextBox" Text="Поиск..." GotFocus="searchTextBox_GotFocus" LostFocus="searchTextBox_LostFocus"></TextBox>
+            <TextBox Height="25" Width="500" x:Name="searchTextBox" Text="Поиск..." GotFocus="searchTextBox_GotFocus" LostFocus="searchTextBox_LostFocus" KeyUp="searchTextBox_KeyUp"/>
         </StackPanel>
 
-        <DataGrid x:Name="coffeeDataGrid" Margin="0,55,0,0" AutoGenerateColumns="False" ItemsSource="{Binding ProductsData}" CellEditEnding="coffeeDataGrid_CellEditEnding" Grid.ColumnSpan="2">
+        <DataGrid x:Name="coffeeDataGrid" Margin="0,55,0,0" AutoGenerateColumns="False" ItemsSource="{Binding ProductsViewData}" CellEditEnding="coffeeDataGrid_CellEditEnding" Grid.ColumnSpan="2">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Название" Binding="{Binding Path=Name}" CanUserSort="True"></DataGridTextColumn>
                 <DataGridTextColumn Header="Оригинальное название" Binding="{Binding Path=FullName}"></DataGridTextColumn>

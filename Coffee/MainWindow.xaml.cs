@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,14 +22,34 @@ namespace Coffee
     /// </summary>
     public partial class MainWindow : Window
     {
-        public ObservableCollection<CoffeeGrade> ProductsData { get; }
+        public ObservableCollection<CoffeeGrade> ProductsViewData { get; }
+        private readonly List<HidableCoffeeGrade> ProductsData = new List<HidableCoffeeGrade>();    
 
         private readonly DataManager dataManager = new DataManager();
 
         public MainWindow()
         {
             InitializeComponent();
-            ProductsData = new ObservableCollection<CoffeeGrade>();
+            ProductsViewData = new ObservableCollection<CoffeeGrade>();
+        }
+
+        public void InvalidateProductsData()
+        {
+            ProductsViewData.Clear();
+            foreach (var prod in ProductsData)
+            {
+                if (prod.Visibility)
+                    ProductsViewData.Add(prod.Grade);
+            }
+        }
+
+        public void ApplyDataFilter(Predicate<CoffeeGrade> predicate)
+        {
+            foreach (var prod in ProductsData)
+            {
+                prod.Visibility = predicate(prod.Grade);
+            }
+            InvalidateProductsData();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -39,7 +60,7 @@ namespace Coffee
                 dataManager.LoadSample(out data);
             }
             foreach (var grade in data)
-                ProductsData.Add(grade);
+                ProductsData.Add(new HidableCoffeeGrade(grade));
 
             DataContext = this;
 
@@ -52,11 +73,12 @@ namespace Coffee
                 searchComboBox.Items.Add(item);
             }
             searchComboBox.SelectedIndex = 0;
+            InvalidateProductsData();
         }
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!dataManager.Save(ProductsData))
+            if (!dataManager.Save(ProductsData.Select(p => p.Grade)))
                 MessageBox.Show(dataManager.ErrorInfo, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
@@ -86,9 +108,56 @@ namespace Coffee
                 searchTextBox.Text = SearchPlaceholder;
         }
 
+        private bool searchPredicate(string substr, CoffeeGrade grade)
+        {
+            if (grade == null)
+                return false;
+
+            bool isNumber = false;
+            string cellString = string.Empty;
+            int cellNumber = 0;
+
+            switch (searchComboBox.SelectedIndex)
+            {
+                case 0:
+                    cellString = grade.Name;
+                    break;
+                case 1:
+                    cellString = grade.FullName;
+                    break;
+                case 2:
+                    cellNumber = grade.MinHeight;
+                    isNumber = true;
+                    break;
+                case 3:
+                    cellNumber = grade.MaxHeight;
+                    isNumber = true;
+                    break;
+                case 4:
+                    cellNumber = grade.RipeDuration;
+                    isNumber = true;
+                    break;
+                case 5:
+                    cellString = grade.Description;
+                    break;
+                default: throw new NotImplementedException();
+            }
+
+            if (!isNumber)
+                return cellString.ToLower().IndexOf(substr) != -1;
+            int searchVal;
+            if (!int.TryParse(substr, out searchVal))
+                return false;
+            return searchVal == cellNumber;
+        }
+
         private void searchTextBox_KeyUp(object sender, KeyEventArgs e)
         {
-            throw new NotImplementedException();
+            var txt = searchTextBox.Text.ToLower();
+            Predicate<CoffeeGrade> filter = item => true;
+            if (txt != string.Empty)
+                filter = (item => searchPredicate(txt, item));
+            ApplyDataFilter(filter);
         }
     }
 }

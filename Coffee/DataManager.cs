@@ -16,7 +16,7 @@ namespace Coffee
         private const string samplePath = "../data_sample.csv";
         private const string filePath = "../data.csv";
 
-        private const string csvHeader = "Сорт; Название;Минимальная высота;Максимальная высота;Длительность созревания(нед.);Описание";
+        private const string csvHeader = "Сорт;Название;Минимальная высота;Максимальная высота;Длительность созревания(нед.);Описание";
 
         public string ErrorInfo { get; private set; }
 
