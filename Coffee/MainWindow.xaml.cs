@@ -1,19 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Coffee
 {
@@ -22,7 +13,14 @@ namespace Coffee
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Коллекция, содержащая элементы для отображения в таблице
+        /// </summary>
         public ObservableCollection<CoffeeGrade> ProductsViewSource { get; }
+
+        /// <summary>
+        /// Коллекция, содержащая все элементы модели с информацией о их видимости в таблице
+        /// </summary>
         private readonly List<CoffeeGradeViewData> ProductsData = new List<CoffeeGradeViewData>();    
 
         private readonly DataManager dataManager = new DataManager();
@@ -33,6 +31,9 @@ namespace Coffee
             ProductsViewSource = new ObservableCollection<CoffeeGrade>();
         }
 
+        /// <summary>
+        /// Изменяет коллекцию ProductsViewSource в зависимости от настроек отображения ProductsData
+        /// </summary>
         public void InvalidateProductsData()
         {
             ProductsViewSource.Clear();
@@ -43,6 +44,9 @@ namespace Coffee
             }
         }
 
+        /// <summary>
+        /// Применяет фильтр к таблице
+        /// </summary>
         public void ApplyDataFilter(Predicate<CoffeeGrade> predicate)
         {
             foreach (var prod in ProductsData)
@@ -52,6 +56,10 @@ namespace Coffee
             InvalidateProductsData();
         }
 
+        /// <summary>
+        /// Вызывается при загрузке окна.
+        /// Загружает данные из файла
+        /// </summary>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             IList<CoffeeGrade> data;
@@ -76,12 +84,20 @@ namespace Coffee
             InvalidateProductsData();
         }
 
+        /// <summary>
+        /// Нажатие кнопки "сохранить"
+        /// </summary>
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
             if (!dataManager.Save(ProductsData.Select(p => p.Grade)))
                 MessageBox.Show(dataManager.ErrorInfo, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            else
+                MessageBox.Show("Файл сохранен", "OK", MessageBoxButton.OK);
         }
 
+        /// <summary>
+        /// Определяет логику валидации ячеек после редактирования
+        /// </summary>
         private void coffeeDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             var grid = (DataGrid) sender;
@@ -104,20 +120,32 @@ namespace Coffee
             }
         }
 
+        /// <summary>
+        /// Текст подсказки в поле для поиска
+        /// </summary>
         public const string SearchPlaceholder = "Поиск...";
 
+        /// <summary>
+        /// Убирает подсказку на поле для поиска при нажатии
+        /// </summary>
         private void searchTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             if (searchTextBox.Text == SearchPlaceholder)
                 searchTextBox.Text = string.Empty;
         }
 
+        /// <summary>
+        /// Показывает подсказку на поле для поиска при потере фокуса
+        /// </summary>
         private void searchTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             if (searchTextBox.Text == string.Empty)
                 searchTextBox.Text = SearchPlaceholder;
         }
 
+        /// <summary>
+        /// Определяет, подходит ли grade под фильтр с заданной substr
+        /// </summary>
         private bool searchPredicate(string substr, CoffeeGrade grade)
         {
             if (grade == null)
@@ -160,6 +188,9 @@ namespace Coffee
             return searchVal == cellNumber;
         }
 
+        /// <summary>
+        /// Запуск фильтрации при изменении строки поиска
+        /// </summary>
         private void searchTextBox_KeyUp(object sender, KeyEventArgs e)
         {
             var txt = searchTextBox.Text.ToLower();
@@ -167,6 +198,17 @@ namespace Coffee
             if (txt != string.Empty)
                 filter = (item => searchPredicate(txt, item));
             ApplyDataFilter(filter);
+        }
+
+        /// <summary>
+        /// Реализует логику добавления ного элемента в таблицу
+        /// </summary>
+        private void coffeeDataGrid_AddingNewItem(object sender, AddingNewItemEventArgs e)
+        {
+            var grade = new CoffeeGrade();
+            e.NewItem = grade;
+            var viewData = new CoffeeGradeViewData(grade);
+            ProductsData.Add(viewData);
         }
     }
 }

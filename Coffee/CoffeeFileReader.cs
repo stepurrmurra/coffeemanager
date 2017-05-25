@@ -5,18 +5,41 @@ using System.Collections.Generic;
 
 namespace Coffee
 {
+    /// <summary>
+    /// Обеспечивает упрощенный способ чтения объектов типа CoffeeGrade из файла
+    /// </summary>
 	internal class CoffeeFileReader : IDisposable
     {
+        /// <summary>
+        /// Символ разделения полей в файле CSV
+        /// </summary>
         public char CsvSeparator { get; }
 
+        /// <summary>
+        /// Максимальная длина одной строки в файле, 
+        /// по достижению этой длины чтение файла прерывается
+        /// </summary>
         private const int maxLineLength = 1024;
+
+        /// <summary>
+        /// Байт на символ (UTF-8)
+        /// </summary>
 		private const int bytesPerSymbol = 2;
 
+        /// <summary>
+        /// Путь до читаемого файла
+        /// </summary>
 		private readonly string filePath;
 		private readonly StreamReader fileStreamReader;
 
+        /// <summary>
+        /// "Ленивая" коллекция со строками файла
+        /// </summary>
 		private readonly IEnumerable<string> fileLines;
 
+        /// <summary>
+        /// Проверяет, является ли последний считанный символ переносом строки
+        /// </summary>
 		private bool IsLineEndingReached(char lastRead, StreamReader stream)
 		{
 			if (lastRead == '\n')
@@ -39,6 +62,10 @@ namespace Coffee
 			return false;
 		}
 
+        /// <summary>
+        /// Считывает построчно файл, ограничивая длину строки
+        /// </summary>
+        /// <returns></returns>
 		private IEnumerable<string> ReadLinesBounded()
 		{
 			var builder = new StringBuilder(maxLineLength);
@@ -64,6 +91,11 @@ namespace Coffee
 			}
 		}
 
+        /// <summary>
+        /// Инициализирует CoffeeFileReader файлом
+        /// </summary>
+        /// <param name="filePath">Путь до читаемого файла</param>
+        /// <param name="csvSeparator">Разделитель в формате CSV</param>
 		public CoffeeFileReader(string filePath, char csvSeparator = ';')
 		{
 		    this.CsvSeparator = csvSeparator;
@@ -81,10 +113,14 @@ namespace Coffee
 				throw new IOException("Ошибка: Достигнут конец файла");
 		}
 
+        /// <summary>
+        /// Получает построчно объекты типа CoffeeGrade
+        /// </summary>
 		public IEnumerable<CoffeeGrade> ReadGrades()
 		{
 			var enumerator = fileLines.GetEnumerator();
 			CoffeeGrade grade;
+
 			while (enumerator.MoveNext())
 			{
 				string line = enumerator.Current;
@@ -93,6 +129,9 @@ namespace Coffee
 			}
 		}
 
+        /// <summary>
+        /// Освобождает задействованные ресурсы
+        /// </summary>
 		public void Dispose()
 		{
 			fileStreamReader.Close();

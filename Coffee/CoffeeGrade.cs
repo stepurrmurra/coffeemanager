@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Coffee
+﻿namespace Coffee
 {
     public class CoffeeGrade
     {
+        /// <summary>
+        /// Суммарное количество полей, необходимое для описания CoffeeGrade в файле
+        /// </summary>
         private const int fieldCount = 6;
 
         public string Name { get; set; }

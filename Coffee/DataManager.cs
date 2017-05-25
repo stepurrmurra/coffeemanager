@@ -1,25 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Coffee
 {
     class DataManager
     {
+        /// <summary>
+        /// Символ разделения полей в файле CSV
+        /// </summary>
         public const char CsvSeparator = ';';
 
-        private const string samplePath = "../data_sample.csv";
-        private const string filePath = "../data.csv";
 
+        private const string samplePath = "../../../data_sample.csv";
+
+        /// <summary>
+        /// Путь до файла с информацией для таблицы
+        /// </summary>
+        private const string filePath = "../../../data.csv";
+
+        /// <summary>
+        /// Заголовок для файла 
+        /// </summary>
         private const string csvHeader = "Сорт;Название;Регион;Высота;Длительность созревания(нед.);Описание";
 
+        /// <summary>
+        /// Информация о последней неудавшейся операции
+        /// </summary>
         public string ErrorInfo { get; private set; }
 
+        /// <summary>
+        /// Пытается загрузить данные из файла
+        /// </summary>
         public bool TryLoad(out IList<CoffeeGrade> grades)
         {
             grades = new List<CoffeeGrade>();
@@ -49,6 +62,9 @@ namespace Coffee
             }
         }
 
+        /// <summary>
+        /// Воссоздает файл таблицы для программы из примера
+        /// </summary>
         public void LoadSample(out IList<CoffeeGrade> grades)
         {
             File.Copy(samplePath, filePath);
@@ -56,6 +72,9 @@ namespace Coffee
                 throw new Exception("Не могу восстановить данные из cемпла");
         }
 
+        /// <summary>
+        /// Сохраняет коллекцию в файл таблицы
+        /// </summary>
         public bool Save(IEnumerable<CoffeeGrade> grades)
         {
             try

@@ -2,6 +2,9 @@
 
 namespace Coffee
 {
+    /// <summary>
+    /// Представляет объекты класса CoffeeGrade с дополнительной информацией о способе отображения
+    /// </summary>
     public class CoffeeGradeViewData
     {
         public CoffeeGrade Grade { get; set; }
