@@ -35,7 +35,7 @@ namespace Coffee
                         if (grade == null)
                         {
                             ErrorInfo = $"Получена некорректная строка из файла {filePath}";
-                            return false;
+                            return grades.Count != 0;
                         }
                         grades.Add(grade);
                     }
@@ -62,7 +62,7 @@ namespace Coffee
             {
                 using (var stream = File.OpenWrite(filePath))
                 {
-                    using (var writer = new StreamWriter(stream))
+                    using (var writer = new StreamWriter(stream, Encoding.UTF8))
                     {
                         writer.WriteLine(csvHeader);
                         foreach (var grade in grades)

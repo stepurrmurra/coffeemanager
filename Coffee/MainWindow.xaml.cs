@@ -85,12 +85,22 @@ namespace Coffee
         private void coffeeDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             var grid = (DataGrid) sender;
-            string text = e.EditingElement.ToString();
+            string text = (e.EditingElement as TextBox)?.Text;
 
             if (text.IndexOf(DataManager.CsvSeparator) != -1)
             {
                 e.Cancel = true;
                 MessageBox.Show($"Недопустимый символ '{DataManager.CsvSeparator}' в ячейке", "Недопустимый символ");
+                return;
+            }
+
+            int value;
+            if (int.TryParse(text, out value))
+            {
+                if (value >= 0)
+                    return;
+                e.Cancel = true;
+                MessageBox.Show("Численное значение должно быть неотрицательным", "Недопустимое значение");
             }
         }
 
