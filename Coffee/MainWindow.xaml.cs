@@ -22,24 +22,24 @@ namespace Coffee
     /// </summary>
     public partial class MainWindow : Window
     {
-        public ObservableCollection<CoffeeGrade> ProductsViewData { get; }
-        private readonly List<HidableCoffeeGrade> ProductsData = new List<HidableCoffeeGrade>();    
+        public ObservableCollection<CoffeeGrade> ProductsViewSource { get; }
+        private readonly List<CoffeeGradeViewData> ProductsData = new List<CoffeeGradeViewData>();    
 
         private readonly DataManager dataManager = new DataManager();
 
         public MainWindow()
         {
             InitializeComponent();
-            ProductsViewData = new ObservableCollection<CoffeeGrade>();
+            ProductsViewSource = new ObservableCollection<CoffeeGrade>();
         }
 
         public void InvalidateProductsData()
         {
-            ProductsViewData.Clear();
+            ProductsViewSource.Clear();
             foreach (var prod in ProductsData)
             {
-                if (prod.Visibility)
-                    ProductsViewData.Add(prod.Grade);
+                if (prod.Visible)
+                    ProductsViewSource.Add(prod.Grade);
             }
         }
 
@@ -47,7 +47,7 @@ namespace Coffee
         {
             foreach (var prod in ProductsData)
             {
-                prod.Visibility = predicate(prod.Grade);
+                prod.Visible = predicate(prod.Grade);
             }
             InvalidateProductsData();
         }
@@ -60,7 +60,7 @@ namespace Coffee
                 dataManager.LoadSample(out data);
             }
             foreach (var grade in data)
-                ProductsData.Add(new HidableCoffeeGrade(grade));
+                ProductsData.Add(new CoffeeGradeViewData(grade));
 
             DataContext = this;
 
@@ -126,11 +126,10 @@ namespace Coffee
                     cellString = grade.FullName;
                     break;
                 case 2:
-                    cellNumber = grade.MinHeight;
-                    isNumber = true;
+                    cellString = grade.Region;
                     break;
                 case 3:
-                    cellNumber = grade.MaxHeight;
+                    cellNumber = grade.Height;
                     isNumber = true;
                     break;
                 case 4:

@@ -14,8 +14,8 @@ namespace Coffee
 
         public string Name { get; set; }
         public string FullName { get; set; }
-        public int MinHeight { get; set; }
-        public int MaxHeight { get; set; }
+        public string Region { get; set; }
+        public int Height { get; set; }
         public int RipeDuration { get; set; }
         public string Description { get; set; }
 
@@ -28,15 +28,15 @@ namespace Coffee
 
             grade.Name = elements[0];
             grade.FullName = elements[1];
-            int minHeight, maxHeight, ripeDuration;
+            grade.Region = elements[2];
 
-            if (!int.TryParse(elements[2], out minHeight) ||
-                !int.TryParse(elements[3], out maxHeight) ||
+            int height, ripeDuration;
+
+            if (!int.TryParse(elements[3], out height) ||
                 !int.TryParse(elements[4], out ripeDuration))
                 return false;
 
-            grade.MinHeight = minHeight;
-            grade.MaxHeight = maxHeight;
+            grade.Height = height;
             grade.RipeDuration = ripeDuration;
 
             grade.Description = elements[5];
@@ -45,7 +45,7 @@ namespace Coffee
 
         public override string ToString()
         {
-            return $"{Name};{FullName};{MinHeight};{MaxHeight};{RipeDuration};{Description}";
+            return $"{Name};{FullName};{Region};{Height};{RipeDuration};{Description}";
         }
     }
 }

@@ -26,12 +26,12 @@
             <TextBox Height="25" Width="500" x:Name="searchTextBox" Text="Поиск..." GotFocus="searchTextBox_GotFocus" LostFocus="searchTextBox_LostFocus" KeyUp="searchTextBox_KeyUp"/>
         </StackPanel>
 
-        <DataGrid x:Name="coffeeDataGrid" Margin="0,55,0,0" AutoGenerateColumns="False" ItemsSource="{Binding ProductsViewData}" CellEditEnding="coffeeDataGrid_CellEditEnding" Grid.ColumnSpan="2">
+        <DataGrid x:Name="coffeeDataGrid" Margin="0,55,0,0" AutoGenerateColumns="False" ItemsSource="{Binding ProductsViewSource}" CellEditEnding="coffeeDataGrid_CellEditEnding" Grid.ColumnSpan="2">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Название" Binding="{Binding Path=Name}" CanUserSort="True"></DataGridTextColumn>
                 <DataGridTextColumn Header="Оригинальное название" Binding="{Binding Path=FullName}"></DataGridTextColumn>
-                <DataGridTextColumn Header="Мин. высота" Binding="{Binding Path=MinHeight}"></DataGridTextColumn>
-                <DataGridTextColumn Header="Макс. высота" Binding="{Binding Path=MaxHeight}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Регион" Binding="{Binding Path=Region}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Высота" Binding="{Binding Path=Height}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Срок созревания (нед)" Binding="{Binding Path=RipeDuration}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Описание" Binding="{Binding Path=Description}" CanUserSort="False"></DataGridTextColumn>
             </DataGrid.Columns>
